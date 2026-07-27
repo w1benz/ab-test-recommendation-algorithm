@@ -52,3 +52,30 @@ Three datasets sharing the same schema, covering different time windows:
 `region`, `device`, `test_group` (test datasets only).
 
 ---
+
+## 4. Methodology
+ 
+1. **Historical EDA** — examined session-level behavior for the most
+   active user, tracked daily registration trends, analyzed the
+   distribution of pages viewed per session, and engineered a
+   `good_session` flag (1 if 4+ pages viewed) as a proxy for content
+   satisfaction
+2. **Test design**
+   - **Target metric:** average pages viewed per session — the most
+     direct engagement signal, since better recommendations should
+     drive more page views
+   - **Sample size:** calculated via `NormalIndPower.solve_power()`
+     (α = 0.05, power = 0.8, MDE = 3%)
+   - **Test duration:** derived from required sample size and average
+     daily traffic from the historical data
+3. **Live monitoring** — validated the test while running:
+   - Group size balance (percentage difference between A and B)
+   - Group independence (checked for users appearing in both groups)
+   - Distribution balance across device type and region
+4. **Results analysis**
+   - Validity check: confirmed daily session counts didn't differ
+     significantly between groups (Mann-Whitney U test)
+   - Compared the share of "good sessions" between groups A and B
+   - Tested statistical significance of the observed uplift (z-test for proportions)
+
+---
